@@ -37,7 +37,7 @@
     		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
         
-        var svg=d3.select(map.getPanes().overlayPane.append"svg");
+        var svg=d3.select(map.getPanes().overlayPane).append("svg");
         var g=svg.append("g").attr("class","leaflet-zoom-hide");
 
         function projectPoint(lat,lng){
@@ -51,35 +51,37 @@
 		var transform = d3.geo.transform({point: projectStream});
 		var path = d3.geo.path().projection(transform);
 
-		d3.json("getData",function(data)){
+		d3.json("/getData/",function(data){
 			var circles=g.selectAll("circle").data(data.features);
 
 			circles.enter()
 			    .append("circle")
 			    .attr("r",10);
-		}
+		
 
-		function updat(){
-			var bounds=path.bounds(data),
-			    topLeft=bounds[0],
-			    bottomRight=bounds[1];
+			function update(){
+				var bounds=path.bounds(data),
+				    topLeft=bounds[0],
+				    bottomRight=bounds[1];
 
-			var buffer=50;
+				var buffer=50;
 
-			svg.attr("width", bottomRight[0]-topLeft[0]+(buffer*2))
-			   .attr("height", bottomRight[1]-topLeft[1]+(buffer*2))
-			   .style("left", (topLeft[0]- buffer)+"px")
-			   .style("top", (topLeft[1]- buffer)+"px")
+				svg.attr("width", bottomRight[0]-topLeft[0]+(buffer*2))
+				   .attr("height", bottomRight[1]-topLeft[1]+(buffer*2))
+				   .style("left", (topLeft[0]- buffer)+"px")
+				   .style("top", (topLeft[1]- buffer)+"px");
 
-			g  .attr("transform","translate ("+(-topLeft[0]+buffer)+","+(-topLeft[1]+buffer)+")");
+				g  .attr("transform","translate ("+(-topLeft[0]+buffer)+","+(-topLeft[1]+buffer)+")");
 
-			circles
-			    .attr("cx", function(d) { return projectPoint(d.geometry.coordinates[0], d.geometry.coordinates[1]).x; })
-			    .attr("cy", function(d) { return projectPoint(d.geometry.coordinates[0], d.geometry.coordinates[1]).y; });
-		}
+				circles
+					    .attr("cx", function(d) { return projectPoint(d.geometry.coordinates[0], d.geometry.coordinates[1]).x; })
+					    .attr("cy", function(d) { return projectPoint(d.geometry.coordinates[0], d.geometry.coordinates[1]).y; });
+				};
 
-		update();
-		map.on("viewreset",update);
+			update();
+			map.on("viewreset",update);
+
+		});
 
 		//uncomment for Mapbox implementation, and supply your own access token
 

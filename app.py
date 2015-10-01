@@ -11,13 +11,13 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index_finish.html")
 
 @app.route("/getData/")
 def getData():
 	
 	client = pyorient.OrientDB("localhost", 2424)
-	session_id = client.connect("root", "admin")
+	session_id = client.connect("root", "xiaozhuasha")
 	db_name = "soufun"
 	db_username = "admin"
 	db_password = "admin"
